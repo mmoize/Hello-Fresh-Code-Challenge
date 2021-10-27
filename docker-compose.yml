@@ -1,0 +1,57 @@
+version: "3.9"
+
+x-service-volumes: &service-volumes
+  -./:/app/:rw.cached
+
+x-databse-variable: &database-variables
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: 7745
+
+
+x-app-variables: &app-variables
+  <<: *database-variables
+  POSTGRES_HOST: postgres
+
+
+   
+services:
+
+  web:
+    image: hello-fresh-python-code-challenge:latest
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes: 
+      - .:/code
+    environment: *app-variables
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+    - .env
+
+  db:
+    image: hello-fresh-python-code-challenge:latest
+    volumes: 
+       - ./data/db:/var/lib/postgresql/data
+    command: python manage.py migrate
+    environment: *app-variables
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:13
+    ports:
+     - "5432:5432"
+    environment: *database-variables
+
+
+
+
+
+
+
+      
