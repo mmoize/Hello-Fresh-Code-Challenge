@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authentication.apps.AuthenticationConfig',
+    'menu_plan.apps.MenuPlanConfig',
+    'core.apps.CoreConfig',
     'rest_framework',
+    'django_filters',
 
 ]
 
@@ -84,7 +87,7 @@ DATABASES = {
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
+        # 'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT'),
 
     }
@@ -116,13 +119,9 @@ REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'error',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'authentication.backends.JWTAuthentication',
-
     ),
     'DEFAULT_PERMISSION_CLASSES': (
       'authentication.backends.JWTAuthentication',
-    ),
-    'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework_filters.backends.RestFrameworkFilterBackend',
     ),
 
 }
