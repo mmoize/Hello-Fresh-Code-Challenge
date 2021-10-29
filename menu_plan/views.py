@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.generics import UpdateAPIView
 from rest_framework import status
-from .utils import MultipartJsonParser
+from core.utils import MultipartJsonParser
 from rest_framework.exceptions import NotAcceptable, NotFound
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from .models import (
@@ -195,16 +195,7 @@ class WeeklyMenuView(ModelViewSet):
 
         return super().update(request, *args, **kwargs)
 
-    # def update(self, request, *args, **kwargs):
 
-    #     serializer = self.get_serializer(data=request.data)
-
-    #     serializer.is_valid(raise_exception=True)
-
-    #     self.perform_update(serializer)
-
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 

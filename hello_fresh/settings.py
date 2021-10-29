@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication.apps.AuthenticationConfig',
     'menu_plan.apps.MenuPlanConfig',
+    'account.apps.AccountConfig',
     'core.apps.CoreConfig',
     'rest_framework',
     'django_filters',
@@ -93,6 +94,8 @@ DATABASES = {
     }
 
 }
+
+DATE_INPUT_FORMATS =['%Y-%m-%d'] 
 
 
 # Password validation

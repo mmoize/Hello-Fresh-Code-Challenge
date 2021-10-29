@@ -2,9 +2,12 @@ import os
 from django.db import models
 from django.db.models.signals import post_save
 from authentication.models import User
+from account.models import Profile
 from django_extensions.db.models import (ActivatorModel,TimeStampedModel)
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import ugettext_lazy 
+import datetime
+
 
 
 
@@ -159,10 +162,12 @@ class Weeklymenu(models.Model):
         (Four_Recipes, 4),
         (Five_Recipes, 5)
     )
-
+    
+    week_date = models.DateField(blank=False, default=datetime.now().strftime("%Y-%m-%d"))
+    week_number = models.IntegerField(blank=False, default=0)
     number_ofpeople = models.CharField(max_length=50, choices=Number_Of_People_Choices,default=2,blank=False)
     weelkly_recipe_amount = models.CharField(max_length=50, choices=Amount_Of_Recipes_Choices,default=4,blank=False)
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
+    customer = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
     recipes = models.ManyToManyField(Recipe, related_name='weeklyrecipes', blank=True)
 
 
@@ -171,13 +176,6 @@ class Weeklymenu(models.Model):
         return self.customer.username
 
 
-# Signals it creats weekly menu Model for a user as soon as the user signs up
-# But does not populate all fields apart from the customer field.
-def create_user_weeklymenu(sender, instance, created, **kwargs):
-    if created:
-        weeklymenu = Weeklymenu(customer=instance)
-        weeklymenu.save()
-post_save.connect(create_user_weeklymenu, sender=User, dispatch_uid="users-weeklymenuecreation-signal")
 
     
     
