@@ -11,11 +11,16 @@ from rest_framework import status
 from core.utils import MultipartJsonParser
 from rest_framework.exceptions import NotAcceptable, NotFound
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from datetime import date , datetime, timedelta
+from authentication.models import User
+from rest_framework.decorators import action
 from .models import (
+    Comments,
     Tags,
     Allergen,
     Utensil,
     Review,
+    Comments,
     Recipe,
     Ingredients,
     Nutritionalvalue,
@@ -37,14 +42,15 @@ from .serializers import (
 
 
 # Recipe view for Creating a Recipe which is only done by a user with adming privileges
-class RecipeCreateView(ModelViewSet):
+class RecipeView(ModelViewSet):
     permission_classes = (IsAuthenticated,)  
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     parser_classes = [MultipartJsonParser, JSONParser]
+    lookup_field = "id"
 
     def get_serializer_context(self):
-        context = super(RecipeCreateView, self).get_serializer_context()
+        context = super(RecipeView, self).get_serializer_context()
         # If images are included they could separeted here from the rest of the incoming information
         if len(self.request.data) > 0:
                 context.update({
@@ -66,24 +72,12 @@ class RecipeCreateView(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class RecipeListView(ModelViewSet):
-    permission_classes = (IsAuthenticated, )
-    serializer_class = RecipeSerializer
-    queryset = Recipe.objects.all()
 
-    def get_queryset(self, *args, **kwargs):
-        queryset = Recipe.objects.all()  
-        return queryset
-
-
-#Deleting Specific Recipe using and ID
-class  DeleteRecipeView(APIView):
-    permission_classes = (IsAuthenticated,) 
-
-    def delete(self, request, id, format=None):
-
+    def destroy(self,  request, *args, **kwargs):
         try:
-            Recipe.objects.filter(id=id).delete()
+            instance = self.get_object()
+            id = instance.id
+            self.perform_destroy(instance)
         except Exception:
             raise  NotFound(
 
@@ -93,25 +87,30 @@ class  DeleteRecipeView(APIView):
             )
 
         responseData = {}   
-
-        responseData = "The Recipe with ID "+ str(id)+ " was deleted." 
-
+        responseData = "The Recipe with ID "+ str(id)+ " was deleted."
         return Response(responseData, status=status.HTTP_204_NO_CONTENT)
 
 
-# Get A specific Recipe using ID or Name
-class FindRecipeView(ModelViewSet):
-    permission_classes = (IsAuthenticated,) 
-    serializer_class = RecipeSerializer
-    parser_classes = [MultipartJsonParser, JSONParser]
+    def get_queryset(self):
 
-    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset()
 
-        id = self.request.query_params.get('id')
-       
-        querySet= Recipe.objects.filter(id=id)
-            
-        return querySet
+
+    @action(detail=True)
+    def get_one_recipe(self, pk, request, *args, **kwargs):
+
+        
+    
+        serializer_context = {
+            'request': request,
+        }
+        recipe = Recipe.objects.get(id=pk)
+        serializer = RecipeSerializer(recipe, context=serializer_context)
+        return Response(serializer.data)
+
+
+
+
 
 #Review Recipe: Rate it and comment
 class RateRecipeView(ModelViewSet):
@@ -129,19 +128,22 @@ class RateRecipeView(ModelViewSet):
 
             try:
                 review = Review.objects.get(user=currenlty_user.id, recipe=recipe.id)
-                review.comment = user_comment
+                comment_obj = Comments.objects.create(user=currenlty_user, comment=user_comment)
+                review.comments.add(comment_obj) 
                 review.rate = user_rating
                 review.save()
                 serializer = ReviewSerializer(review, many=False)
                 response = {'message': 'Review updated', 'result': serializer.data}
                 return Response(response, status= status.HTTP_200_OK)
             except:
+                comment_obj = Comments.objects.create(user=currenlty_user, comment=user_comment)
                 review = Review.objects.create(
                     recipe = recipe,
                     user = currenlty_user,
-                    comment = user_comment,
                     rate = user_rating
                 )
+
+                review.comments.add(comment_obj)
 
                 serializer = ReviewSerializer(review, many=False)
                 response = {'message': 'Review was created', 'result': serializer.data}
@@ -172,7 +174,7 @@ class WeeklyMenuView(ModelViewSet):
     serializer_class = WeeklymenuSerializer
     queryset = Weeklymenu.objects.all()
     parser_classes = [MultipartJsonParser, JSONParser]
-    lookup_field = "id"
+    lookup_field = "customer"
 
     def get_serializer_context(self):
         context = super(WeeklyMenuView, self).get_serializer_context()
@@ -183,17 +185,54 @@ class WeeklyMenuView(ModelViewSet):
             })
 
         return context
-    
+
+    @action(detail=True)
+    def get_user_one_week_menu(self, request, *args, **kwargs):
+        Data = request.data
+        serializer_context = {
+            'request': request,
+        }
+        weeklymenu = Weeklymenu.objects.filter(customer=request.user.id, week_number=Data['week_number'])
+        serializer = WeeklymenuSerializer(weeklymenu, context=serializer_context, many=True)
+
+        return Response(serializer.data)
+
+    @action(detail=True)
+    def user_weekly_menu(self, request, *args, **kwargs):
+
+        serializer_context = {
+            'request': request,
+        }
+        weeklymenu = Weeklymenu.objects.filter(customer=request.user.id)
+        serializer = WeeklymenuSerializer(weeklymenu, context=serializer_context, many=True)
+
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        weeklymenu = Weeklymenu.objects.filter(customer=self.request.user.id)
+        return weeklymenu
+
+
     def update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        partial = True # Here I change partial to True
+        Data = request.data
+        weeklymenus = Weeklymenu.objects.filter(customer=self.request.user.id)
 
-        serializer.is_valid(raise_exception=True)
+        if 'week_number' in Data:  # Update is for one specific menu
+            weekmenu = Weeklymenu.objects.get(week_number=int(Data['week_number']))
+            serializer = self.get_serializer(weekmenu, data=Data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            
+        else: # Update is for weekly Menus 
+            for weekly_menu in weeklymenus:
+                serializer = self.get_serializer(weekly_menu, data=Data, partial=partial)
+                serializer.is_valid(raise_exception=True)
+                self.perform_update(serializer)
+        return Response(serializer.data)
 
-        self.perform_update(serializer)
 
-        headers = self.get_success_headers(serializer.data)
-
-        return super().update(request, *args, **kwargs)
+    
 
 
 

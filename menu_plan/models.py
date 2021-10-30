@@ -2,11 +2,10 @@ import os
 from django.db import models
 from django.db.models.signals import post_save
 from authentication.models import User
-from account.models import Profile
 from django_extensions.db.models import (ActivatorModel,TimeStampedModel)
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import ugettext_lazy 
-import datetime
+from datetime import date , datetime, timedelta
 
 
 
@@ -126,10 +125,14 @@ class Instruction(models.Model):
     step = models.IntegerField(blank=False, default=0)
     photo = models.CharField(blank=False, max_length=300)
 
+class Comments(TimeStampedModel):
+   user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
+   comment = models.CharField(blank=True, max_length=300)
+
 class Review(TimeStampedModel):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment = models.CharField(blank=True, max_length=300)
+    comments = models.ManyToManyField(Comments, related_name='weeklyrecipes', blank=True)
     rate = models.IntegerField(blank=False, validators=[MinValueValidator(1), MaxValueValidator(5)])
      
     class Meta:
@@ -138,6 +141,8 @@ class Review(TimeStampedModel):
     
     class Meta:
         ordering = ['-created',]
+
+
 
 
 
@@ -167,7 +172,7 @@ class Weeklymenu(models.Model):
     week_number = models.IntegerField(blank=False, default=0)
     number_ofpeople = models.CharField(max_length=50, choices=Number_Of_People_Choices,default=2,blank=False)
     weelkly_recipe_amount = models.CharField(max_length=50, choices=Amount_Of_Recipes_Choices,default=4,blank=False)
-    customer = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
     recipes = models.ManyToManyField(Recipe, related_name='weeklyrecipes', blank=True)
 
 
