@@ -2,6 +2,8 @@ from rest_framework import serializers
 from authentication.models import User
 from authentication.serializers import UserSerializer
 from rest_framework.exceptions import NotAcceptable
+from datetime import date , timedelta
+import datetime
 import random
 import ast
 import inspect
@@ -14,6 +16,7 @@ from .models import (
     Nutritionalvalue,
     Instruction,
     Review,
+    Comments,
     Weeklymenu
 )
 
@@ -191,56 +194,94 @@ class  RecipeSerializer(serializers.HyperlinkedModelSerializer):
     
         instance.save()
         return instance
+    
+    
 
+
+class CommentsSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedRelatedField(view_name="menu_plan:review-detail", read_only=True, lookup_field="review")
+    user = UserSerializer(read_only=True,)
+    class Meta:
+        model = Comments
+        fields = ['url','id', 'user', 'comment']
 
 class ReviewSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedRelatedField(view_name="menu_plan:review-detail", read_only=True, lookup_field="review")
+    comments = CommentsSerializer( allow_null=True, many=True, read_only=True)
+    user = UserSerializer(read_only=True,)
     class Meta:
         model = Review
-        fields = ['id', 'rate', 'user', 'comment', 'recipe']
-
-
+        fields = ['url','id', 'rate', 'user', 'comments', 'recipe']
 
 
 
 
 class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedRelatedField(view_name="menu_plan:weeklymenu-detail", read_only=True, lookup_field="id")
-    recipes_set = serializers.HyperlinkedRelatedField(view_name="menu_plan:recipe-detail", read_only=True, source="recipe" )
+    url = serializers.HyperlinkedRelatedField(view_name="menu_plan:weeklymenu-detail", read_only=True, lookup_field="customer")
+    recipes = RecipeSerializer( allow_null=True, read_only=True, many=True, )
+    #recipes_set = serializers.HyperlinkedRelatedField(view_name="menu_plan:recipe-detail", allow_null=True, read_only=True, many=True, source="recipes" )
     customer = UserSerializer(read_only=True,)
     class Meta:
         model = Weeklymenu
-        fields = ['url', 'id','number_ofpeople','weelkly_recipe_amount', 'customer', 'recipes_set']
-    
+        fields = ['url', 'id', 'week_date','week_number', 'number_ofpeople','weelkly_recipe_amount', 'customer', 'recipes']
+        lookup_field = "customer"
+        lookup_value_regex = "[^/]+" 
+
 
     def create(self, validated_data):
+        #Customer needs 52 weeks of weely menu recipes.
+        #Code below calculates the Dates from the time of profile
+        Weeklymenu_Obj = Weeklymenu.objects.filter(customer = self.context['request'].user)
 
-
-        Weeklymenu_Obj = Weeklymenu.objects.create(
-           number_ofpeople = validated_data['number_ofpeople'],
-           weelkly_recipe_amount = validated_data['weelkly_recipe_amount'],
-           customer = self.context['request'].user
-        )
-
-        RecipesList = list(Recipe.objects.all())
-        Recipes = {}
-        weekly_Amount_ofRecipes = validated_data['weelkly_recipe_amount']
-
-        # Populates the many to many recipe field in WeeklyMenu model
-        # It basically assigns the customer recipes 
-        if weekly_Amount_ofRecipes == 3:
-            random_Recipe = random.sample(RecipesList, 3)
-            for recipe in random_Recipe:
-                Weeklymenu_Obj.recipes.add(recipe)
+        if Weeklymenu_Obj.exists:
+            raise NotAcceptable(
+                detail={
+                    'message': "The request is not acceptable. Weekly Menu's already created "
+                }, code=406)
         
-        elif weekly_Amount_ofRecipes == 4:
-            random_Recipe = random.sample(RecipesList, 4)
-            for recipe in random_Recipe:
-                Weeklymenu_Obj.recipes.add(recipe)
+        else:
+            today = datetime.date.today()
+            i = 1
+            week_count =  53 # Adding 53 weeks, due to the fact that python will start at 0
+            for week in range(week_count):
+                if week == 0:  # Don't mind the zero here
+                    pass
+                else:
+                    # Code below calculates the date from today.
+                    coming_weeks_date = today + datetime.timedelta(days=week*7)
+                    # Creating Weekly menu object 
+                    Weeklymenu_Obj = Weeklymenu.objects.create(
+                        week_date = coming_weeks_date,
+                        week_number = i,
+                        number_ofpeople = validated_data['number_ofpeople'],
+                        weelkly_recipe_amount = validated_data['weelkly_recipe_amount'],
+                        customer = self.context['request'].user
+                    )
+                    # Creat a list of all available recipes
+                    RecipesList = list(Recipe.objects.all())
 
-        elif weekly_Amount_ofRecipes == 5:
-            random_Recipe = random.sample(RecipesList, 5)
-            for recipe in random_Recipe:
-                Weeklymenu_Obj.recipes.add(recipe)
+                    weekly_Amount_ofRecipes = validated_data['weelkly_recipe_amount']
+                    # Populates the many to many recipe field in WeeklyMenu model
+                    # It basically assigns the customer recipes 
+                    if weekly_Amount_ofRecipes == 3:
+                        random_Recipe = random.sample(RecipesList, 3)
+                        for recipe in random_Recipe:
+                            print(recipe)
+                            Weeklymenu_Obj.recipes.add(recipe)
+                    
+                    elif weekly_Amount_ofRecipes == 4:
+                        random_Recipe = random.sample(RecipesList, 4)
+                        for recipe in random_Recipe:
+                            Weeklymenu_Obj.recipes.add(recipe)
+
+                    elif weekly_Amount_ofRecipes == 5:
+                        random_Recipe = random.sample(RecipesList, 5)
+                        for recipe in random_Recipe:
+                            Weeklymenu_Obj.recipes.add(recipe)
+                    i +=1
+
+
+
 
         return Weeklymenu_Obj
 
@@ -250,65 +291,66 @@ class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
         # For accessing none validated Data
         Data = self.context['Menu_Data']
 
-        print("updating", self.instance)
-
-
         RecipesList = list(Recipe.objects.all())
-        # Searching the DB for all recipes with the Ingredients Quantiy based on the number
-        # - number of to be served, thus passing the validated 
-        if 'number_ofpeople' in validated_data:
-            instance.number_ofpeople = validated_data['number_ofpeople']
-            
-            try:
-                RecipesList = list(Recipe.objects.filter(ingredients__serving_amount=validated_data['number_ofpeople']))
-            except Exception:
-                raise NotAcceptable(
-                    detail={
-                        'message': 'The request is not acceptable. Current number of Recepes is  < 3, Admin needs to add more recipes.'
-                    }, code=406)
- 
-        
-        
-        # Selecting number of recipes for this particular week
-        # -if the customer provides an option from the  choices [3, 4, 5]
-        if 'weelkly_recipe_amount' in validated_data:
-                instance.weelkly_recipe_amount = validated_data['weelkly_recipe_amount']
-                weekly_Amount_ofRecipes = validated_data['weelkly_recipe_amount']
-        
-                if weekly_Amount_ofRecipes == 3:
-                    random_Recipe = random.sample(RecipesList, 3)
-                    for recipe in random_Recipe:
-                        instance.recipes.add(recipe)
+
+        if 'week_number' not in  Data:  # Update  all weekly menus
+            # Searching the DB for all recipes with the Ingredients Quantiy based on the number
+            # - number of to be served, thus passing the validated 
+            if 'number_ofpeople' in validated_data:
+                instance.number_ofpeople = validated_data['number_ofpeople']
                 
-                elif weekly_Amount_ofRecipes == 4:
-                    random_Recipe = random.sample(RecipesList, 4)
-                    for recipe in random_Recipe:
-                        instance.recipes.add(recipe)
-
-                elif weekly_Amount_ofRecipes == 5:
-                    random_Recipe = random.sample(RecipesList, 5)
-                    for recipe in random_Recipe:
-                        print('the recipe', recipe)
-                        instance.recipes.add(recipe)
-       
-        # Customer may choose to change auto-assigned recipes 
-        if 'change_recipe' in Data:
-
-            Change_Recipe_StrList = Data['change_recipe']
-            # splitting String "ID, ID" to a list [ID,ID]
-            Change_Recipe_IDS = Change_Recipe_StrList.split(',')
+                try:
+                    RecipesList = list(Recipe.objects.filter(ingredients__serving_amount=validated_data['number_ofpeople']))
+                except Exception:
+                    raise NotAcceptable(
+                        detail={
+                            'message': 'The request is not acceptable. Current number of Recepes is  < 3, Admin needs to add more recipes.'
+                        }, code=406)
+    
             
-            # Old recipe ID is the first element in the splitted string
-            Existing_Recipe_ID = Change_Recipe_IDS[0]
-            Old_Recipe_Obj = Recipe.objects.get(id=Existing_Recipe_ID)
-            # New recipe ID is the second element in the splitted string
-            New_Recipe_ID = Change_Recipe_IDS[1]
-            New_Recipe_Obj = Recipe.objects.get(id=New_Recipe_ID)
+            
+            # Selecting number of recipes for this particular week
+            # -if the customer provides an option from the  choices [3, 4, 5]
+            if 'weelkly_recipe_amount' in validated_data:
+                    instance.weelkly_recipe_amount = validated_data['weelkly_recipe_amount']
+                    weekly_Amount_ofRecipes = validated_data['weelkly_recipe_amount']
+            
+                    if weekly_Amount_ofRecipes == 3:
+                        random_Recipe = random.sample(RecipesList, 3)
+                        for recipe in random_Recipe:
+                            instance.recipes.add(recipe)
+                    
+                    elif weekly_Amount_ofRecipes == 4:
+                        random_Recipe = random.sample(RecipesList, 4)
+                        for recipe in random_Recipe:
+                            instance.recipes.add(recipe)
 
-            # Deleting the old recipe from this particular week's menu
-            instance.recipe.remove(Old_Recipe_Obj)
-            # Add new recipe
-            instance.recipe.add(New_Recipe_Obj)
+                    elif weekly_Amount_ofRecipes == 5:
+                        random_Recipe = random.sample(RecipesList, 5)
+                        for recipe in random_Recipe:
+                            instance.recipes.add(recipe)
+        
+        else: # Update for one specific week menu.
+       
+            # Customer may choose to change auto-assigned recipes 
+            if 'change_recipe' in Data:
+
+                Change_Recipe_StrList = Data['change_recipe']
+                # splitting String "ID, ID" to a list [ID,ID]
+                Change_Recipe_IDS = Change_Recipe_StrList.split(',')
+                
+                # Old recipe ID is the first element in the splitted string
+                Existing_Recipe_ID = Change_Recipe_IDS[0]
+                Old_Recipe_Obj = Recipe.objects.get(id=Existing_Recipe_ID)
+                # New recipe ID is the second element in the splitted string
+                New_Recipe_ID = Change_Recipe_IDS[1]
+                New_Recipe_Obj = Recipe.objects.get(id=New_Recipe_ID)
+
+                # Deleting the old recipe from this particular week's menu
+                instance.recipes.remove(Old_Recipe_Obj)
+                # Add new recipe
+                instance.recipes.add(New_Recipe_Obj)
+            
     
         print(instance.recipes)
         instance.save()
