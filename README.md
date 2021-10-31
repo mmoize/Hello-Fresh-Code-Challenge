@@ -23,9 +23,8 @@ In the project directory, you can run:
 
 This Backend service is built using `Python Django` thus this command Runs the service in Development mode. Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to view it in the browser. 
 You also need to  open up Postman for testing the rest api.
-Inorder to make requests to the backend you will have to signup with an email and password and use the returned JWT Token for all requests to the service.
-
-
+In order to make requests to the backend you will have to signup with an email and password and use the returned JWT Token for all requests to the service.
+You will find the Postman Collection in the project directory for guidance.
 
 ## Built With
 
