@@ -219,7 +219,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedRelatedField(view_name="menu_plan:weeklymenu-detail", read_only=True, lookup_field="customer")
     recipes = RecipeSerializer( allow_null=True, read_only=True, many=True, )
-    #recipes_set = serializers.HyperlinkedRelatedField(view_name="menu_plan:recipe-detail", allow_null=True, read_only=True, many=True, source="recipes" )
     customer = UserSerializer(read_only=True,)
     class Meta:
         model = Weeklymenu
@@ -230,10 +229,11 @@ class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         #Customer needs 52 weeks of weely menu recipes.
-        #Code below calculates the Dates from the time of profile
+        #Code below calculates the Dates from the time of weelky menu created
         Weeklymenu_Obj = Weeklymenu.objects.filter(customer = self.context['request'].user)
 
-        if Weeklymenu_Obj.exists:
+
+        if Weeklymenu_Obj.exists():
             raise NotAcceptable(
                 detail={
                     'message': "The request is not acceptable. Weekly Menu's already created "
@@ -242,7 +242,7 @@ class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
         else:
             today = datetime.date.today()
             i = 1
-            week_count =  53 # Adding 53 weeks, due to the fact that python will start at 0
+            week_count =  53       # Adding 53 weeks, due to the fact that python will start at 0
             for week in range(week_count):
                 if week == 0:  # Don't mind the zero here
                     pass
@@ -266,7 +266,6 @@ class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
                     if weekly_Amount_ofRecipes == 3:
                         random_Recipe = random.sample(RecipesList, 3)
                         for recipe in random_Recipe:
-                            print(recipe)
                             Weeklymenu_Obj.recipes.add(recipe)
                     
                     elif weekly_Amount_ofRecipes == 4:
@@ -280,9 +279,6 @@ class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
                             Weeklymenu_Obj.recipes.add(recipe)
                     i +=1
 
-
-
-
         return Weeklymenu_Obj
 
     # Custom Update for selecting Recipe 
@@ -292,15 +288,17 @@ class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
         Data = self.context['Menu_Data']
 
         RecipesList = list(Recipe.objects.all())
+      
 
         if 'week_number' not in  Data:  # Update  all weekly menus
             # Searching the DB for all recipes with the Ingredients Quantiy based on the number
-            # - number of to be served, thus passing the validated 
+            # - number of people to be served, thus passing the validated Data.
             if 'number_ofpeople' in validated_data:
                 instance.number_ofpeople = validated_data['number_ofpeople']
                 
                 try:
                     RecipesList = list(Recipe.objects.filter(ingredients__serving_amount=validated_data['number_ofpeople']))
+                    
                 except Exception:
                     raise NotAcceptable(
                         detail={
@@ -310,7 +308,7 @@ class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
             
             
             # Selecting number of recipes for this particular week
-            # -if the customer provides an option from the  choices [3, 4, 5]
+            # -if the customer provides an option from the  choices 3, 4 or 5 meals a weak.
             if 'weelkly_recipe_amount' in validated_data:
                     instance.weelkly_recipe_amount = validated_data['weelkly_recipe_amount']
                     weekly_Amount_ofRecipes = validated_data['weelkly_recipe_amount']
@@ -351,8 +349,6 @@ class WeeklymenuSerializer(serializers.HyperlinkedModelSerializer):
                 # Add new recipe
                 instance.recipes.add(New_Recipe_Obj)
             
-    
-        print(instance.recipes)
         instance.save()
         return instance
 

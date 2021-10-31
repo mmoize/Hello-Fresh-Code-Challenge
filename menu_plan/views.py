@@ -51,7 +51,6 @@ class RecipeView(ModelViewSet):
 
     def get_serializer_context(self):
         context = super(RecipeView, self).get_serializer_context()
-        # If images are included they could separeted here from the rest of the incoming information
         if len(self.request.data) > 0:
                 context.update({
                 'recipe_data': self.request.data
@@ -92,15 +91,11 @@ class RecipeView(ModelViewSet):
 
 
     def get_queryset(self):
-
         return super().get_queryset()
 
 
     @action(detail=True)
     def get_one_recipe(self, pk, request, *args, **kwargs):
-
-        
-    
         serializer_context = {
             'request': request,
         }
@@ -152,21 +147,6 @@ class RateRecipeView(ModelViewSet):
         return super().update(request, *args, **kwargs)
 
 
-
-# Recipe Update view
-class RecipeUpdateView(UpdateAPIView):
-    authentication_classes = (IsAuthenticated,)
-    permission_classes = (IsAdminUser,)
-    serializer_class = RecipeSerializer
-
-    def get_object(self):
-        recipe_id = self.kwargs['id']
-        return Recipe.objects.get(id = recipe_id)
-    
-#Weelk
-class UserWeeklyMenueView(ReadOnlyModelViewSet):
-    queryset = Weeklymenu.objects.all()
-    serializer_class = WeeklymenuSerializer
 
 
 class WeeklyMenuView(ModelViewSet):

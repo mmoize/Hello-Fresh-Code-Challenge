@@ -176,7 +176,6 @@ class Weeklymenu(models.Model):
     recipes = models.ManyToManyField(Recipe, related_name='weeklyrecipes', blank=True)
 
 
-
     def __str__(self):
         return self.customer.username
 

@@ -6,7 +6,6 @@ from menu_plan.models import Weeklymenu
 from .views import (
     RecipeView,
     RateRecipeView,
-    RecipeUpdateView,
     WeeklyMenuView
 )
 
@@ -54,7 +53,6 @@ urlpatterns = [
     path('recipe/',recipe_detail,name='recipe_detail'),
     path('recipe_create/',recipe_createview,name='recipe_createview'),
     path('recipereview/<int:id>/', recipe_review,name='recipe_review'),
-
     #Weekly Menu
     path('weeklymenu/<int:customer>/', weeklymenu_detail,name='weeklymenu_detail'),
     path('weeklymenu/<int:customer>/user/', weeklymenu_user_weekly_menu, name='weeklymenu_user_weekly_menu'),
