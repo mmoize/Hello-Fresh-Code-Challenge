@@ -2,12 +2,10 @@ import os
 from django.db import models
 from django.db.models.signals import post_save
 from authentication.models import User
-from django_extensions.db.models import (ActivatorModel,TimeStampedModel)
+from django_extensions.db.models import (ActivatorModel, TimeStampedModel)
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.translation import ugettext_lazy 
-from datetime import date , datetime, timedelta
-
-
+from django.utils.translation import ugettext_lazy
+from datetime import date, datetime, timedelta
 
 
 class Tags(models.Model):
@@ -24,7 +22,6 @@ class Allergen(models.Model):
     def __str__(self):
         template = '{0.name}'
         return template.format(self)
-
 
 
 class Utensil(models.Model):
@@ -47,7 +44,8 @@ class Ingredients(models.Model):
     # recipe = models.ManyToManyField(Recipe, related_name='recipes_ingredient', blank=True)
     name = models.CharField(max_length=300)
     photo = models.CharField(max_length=300)
-    serving_amount = models.CharField(max_length=50, choices=Serving_Amount_Choices,default=2,blank=False)
+    serving_amount = models.CharField(
+        max_length=50, choices=Serving_Amount_Choices, default=2, blank=False)
     quantity = models.IntegerField()
 
     def __str__(self):
@@ -56,7 +54,7 @@ class Ingredients(models.Model):
 
 
 class Recipe(TimeStampedModel):
-   
+
     Cooking_Difficulty_Easy = "Easy"
     Cooking_Difficulty_Medium = "Medium"
     Cooking_Difficulty_Hard = "Hard"
@@ -68,19 +66,23 @@ class Recipe(TimeStampedModel):
     )
 
     name = models.CharField(max_length=150)
-    photo = models.CharField(max_length=300)  #COuld've used ImageField, but this particular app isn't getting deployed.
-    description = models.TextField()          #Describes the recipe
-    prep_time = models.DurationField()        #Time takes to prepare the meal
+    # COuld've used ImageField, but this particular app isn't getting deployed.
+    photo = models.CharField(max_length=300)
+    description = models.TextField()  # Describes the recipe
+    prep_time = models.DurationField()  # Time takes to prepare the meal
     tags = models.ManyToManyField(Tags, related_name='tags', blank=True)
-    cooking_difficulty = models.CharField(max_length=50, choices=Cooking_Difficulty_Choices,default="Medium",blank=False)
-    allergens = models.ManyToManyField(Allergen, related_name='Allergens', blank=True)
-    utensil = models.ManyToManyField(Utensil, related_name='Utensils', blank=True)
+    cooking_difficulty = models.CharField(
+        max_length=50, choices=Cooking_Difficulty_Choices, default="Medium", blank=False)
+    allergens = models.ManyToManyField(
+        Allergen, related_name='Allergens', blank=True)
+    utensil = models.ManyToManyField(
+        Utensil, related_name='Utensils', blank=True)
     ingredients = models.ManyToManyField(Ingredients,  blank=True)
-
 
     def no_of_ratings(self):
         ratings = Review.objects.filter(recipe=self)
         return len(ratings)
+
     def avg_rating(self):
         sum = 0
         ratings = Review.objects.filter(recipe=self)
@@ -91,25 +93,29 @@ class Recipe(TimeStampedModel):
         else:
             return 0
 
-
     def __str__(self):
         template = '{0.name}'
         return template.format(self)
 
     class Meta:
-        ordering = ['-created',]
-
+        ordering = ['-created', ]
 
 
 class Nutritionalvalue(models.Model):
-    recipe =  models.OneToOneField(Recipe,  on_delete=models.CASCADE, blank=False)
+    recipe = models.OneToOneField(
+        Recipe,  on_delete=models.CASCADE, blank=False)
     energy = models.IntegerField(blank=True, default=0)
-    fat = models.DecimalField(blank=True, max_digits=7, decimal_places=1, default=0.0)
-    of_which_saturates = models.DecimalField(max_digits=7, decimal_places=1, blank=True, default=0.0)
-    Carbohydrate = models.DecimalField(max_digits=7, decimal_places=1, blank=True, default=0.0)
-    of_which_sugars = models.DecimalField(max_digits=7, decimal_places=1, blank=True, default=0.0)
+    fat = models.DecimalField(blank=True, max_digits=7,
+                              decimal_places=1, default=0.0)
+    of_which_saturates = models.DecimalField(
+        max_digits=7, decimal_places=1, blank=True, default=0.0)
+    Carbohydrate = models.DecimalField(
+        max_digits=7, decimal_places=1, blank=True, default=0.0)
+    of_which_sugars = models.DecimalField(
+        max_digits=7, decimal_places=1, blank=True, default=0.0)
     dietary_fibre = models.IntegerField(blank=True, default=0)
-    Protein = models.DecimalField(max_digits=7, decimal_places=1, blank=True, default=0.0)
+    Protein = models.DecimalField(
+        max_digits=7, decimal_places=1, blank=True, default=0.0)
     Cholesterol = models.IntegerField(blank=True, default=0)
     Sodium = models.IntegerField(blank=True, default=0)
 
@@ -118,37 +124,38 @@ class Nutritionalvalue(models.Model):
         return template.format(self)
 
 
-
 class Instruction(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    description = models.TextField(blank=False) 
+    description = models.TextField(blank=False)
     step = models.IntegerField(blank=False, default=0)
     photo = models.CharField(blank=False, max_length=300)
 
+
 class Comments(TimeStampedModel):
-   user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
-   comment = models.CharField(blank=True, max_length=300)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
+    comment = models.CharField(blank=True, max_length=300)
+
 
 class Review(TimeStampedModel):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comments = models.ManyToManyField(Comments, related_name='weeklyrecipes', blank=True)
-    rate = models.IntegerField(blank=False, validators=[MinValueValidator(1), MaxValueValidator(5)])
-     
+    comments = models.ManyToManyField(
+        Comments, related_name='weeklyrecipes', blank=True)
+    rate = models.IntegerField(blank=False, validators=[
+                               MinValueValidator(1), MaxValueValidator(5)])
+
     class Meta:
         unique_together = (('user', 'Recipe'),)
-        index_together =  (('user', 'Recipe'),)
-    
+        index_together = (('user', 'Recipe'),)
+
     class Meta:
-        ordering = ['-created',]
-
-
-
+        ordering = ['-created', ]
 
 
 # Weekly Menu Class
 class Weeklymenu(models.Model):
-    #Picking the amount of poeple serving per week
+    # Picking the amount of poeple serving per week
     For_Two_People = 2
     For_Four_people = 4
 
@@ -157,7 +164,7 @@ class Weeklymenu(models.Model):
         (For_Four_people, 4)
     )
 
-    #Picking the amount of Recipes per week
+    # Picking the amount of Recipes per week
     Three_Recipes = 3
     Four_Recipes = 4
     Five_Recipes = 5
@@ -167,20 +174,18 @@ class Weeklymenu(models.Model):
         (Four_Recipes, 4),
         (Five_Recipes, 5)
     )
-    
-    week_date = models.DateField(blank=False, default=datetime.now().strftime("%Y-%m-%d"))
-    week_number = models.IntegerField(blank=False, default=0)
-    number_ofpeople = models.CharField(max_length=50, choices=Number_Of_People_Choices,default=2,blank=False)
-    weelkly_recipe_amount = models.CharField(max_length=50, choices=Amount_Of_Recipes_Choices,default=4,blank=False)
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
-    recipes = models.ManyToManyField(Recipe, related_name='weeklyrecipes', blank=True)
 
+    week_date = models.DateField(
+        blank=False, default=datetime.now().strftime("%Y-%m-%d"))
+    week_number = models.IntegerField(blank=False, default=0)
+    number_ofpeople = models.CharField(
+        max_length=50, choices=Number_Of_People_Choices, default=2, blank=False)
+    weelkly_recipe_amount = models.CharField(
+        max_length=50, choices=Amount_Of_Recipes_Choices, default=4, blank=False)
+    customer = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name=ugettext_lazy('Users'))
+    recipes = models.ManyToManyField(
+        Recipe, related_name='weeklyrecipes', blank=True)
 
     def __str__(self):
         return self.customer.username
-
-
-
-    
-    
-

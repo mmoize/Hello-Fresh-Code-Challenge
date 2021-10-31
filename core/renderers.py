@@ -13,10 +13,11 @@ class CoreJSONRenderer(JSONRenderer):
 
         if errors is not None:
             return super(CoreJSONRenderer, self).render(data)
-        
+
         return json.dumps({
             self.object_label: data
         })
+
 
 class ProfileJSONRenderer(CoreJSONRenderer):
     object_label = 'profile'

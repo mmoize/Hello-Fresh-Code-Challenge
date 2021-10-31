@@ -94,7 +94,7 @@ DATABASES = {
 
 }
 
-DATE_INPUT_FORMATS =['%Y-%m-%d'] 
+DATE_INPUT_FORMATS = ['%Y-%m-%d']
 
 
 # Password validation
@@ -123,7 +123,7 @@ REST_FRAMEWORK = {
         'authentication.backends.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-      'authentication.backends.JWTAuthentication',
+        'authentication.backends.JWTAuthentication',
     ),
 
 }
