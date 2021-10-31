@@ -1,0 +1,725 @@
+{
+	"info": {
+		"_postman_id": "9ea90785-40ae-4d18-ac63-d446e490d841",
+		"name": "Hello-fresh-code-challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Recipes",
+			"item": [
+				{
+					"name": "Create-Recipe",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NjE0NTcxfQ.V09i7k6Xjiz0ehsj1joZ6dzHuCLNRhQuvTd6QanzOME",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "tags",
+									"value": "Naturally Gluten, Free,",
+									"type": "text"
+								},
+								{
+									"key": "allergen",
+									"value": "Sulphites,Egg,Gluten,Milk,Soy",
+									"type": "text"
+								},
+								{
+									"key": "utensil",
+									"value": "Large Non-Stick Pan, Large Pan ",
+									"type": "text"
+								},
+								{
+									"key": "nutritionalvalues",
+									"value": "{\"energy\": \"4300\", \"fat\": \"39.5\",\"of_which_saturates\": \"17.9\", \"carbohydrate\": \"107.8\",\"of_which_sugars\": \"25.2\", \"dietary_fibre\": \"0\", \"Protein\": \"52.4\", \"Cholesterol\": \"0\", \"sodium\": \"1782\"}",
+									"type": "text"
+								},
+								{
+									"key": "instructions",
+									"value": "    {\n        \"description\": \"ring a large saucepan of salted water to the boil\",\n        \"step\": \"1\",\n        \"photo\": \"https: //img.hellofresh.com/f_auto,fl_lossy,q_auto,w_340/hellofresh_s3/5fa9c324cb8f8c0b3a183d01/step-5e3c8e04.jpg\"\n    }, {\n        \"description\": \" Return the frying pan to a medium - high heat with a drizzle of olive oil\",\n        \"step\": \"2\",\n        \"photo\": \"https: //img.hellofresh.com/f_auto,fl_lossy,q_auto,w_340/hellofresh_s3/5fa9c324cb8f8c0b3a183d01/step-4004498f.jpg\"\n    }, {\n        \"description\": \"While the veggies are cooking, add the spaghetti to the saucepan\",\n        \"step\": \"2\",\n        \"photo\": \"https: //img.hellofresh.com/f_auto,fl_lossy,q_auto,w_340/hellofresh_s3/5fa9c324cb8f8c0b3a183d01/step-4602a282.jpg\"\n    }",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Italian Pork Meatballs & Tomato ",
+									"type": "text"
+								},
+								{
+									"key": "photo",
+									"value": "https://img.hellofresh.com/c_fit,f_auto,fl_lossy,h_500,q_auto,w_1900/hellofresh_s3/image/italian-pork-meatballs-tomato-sugo-0057b8a8.jpg",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Proof that comfort food can be low carb, you're in for a real treat with tonight's Italian-inspired ",
+									"type": "text"
+								},
+								{
+									"key": "prep_time",
+									"value": "25",
+									"type": "text"
+								},
+								{
+									"key": "cooking_difficulty",
+									"value": "Easy",
+									"type": "text"
+								},
+								{
+									"key": "ingredients",
+									"value": "{ \"name\": \"clove garlic\",\"photo\":\"https://img.hellofresh.com/f_auto,fl_lossy,h_70,q_auto,w_70/hellofresh_s3/image/554affd44dab71c8058b456b.png\",\"serving_amount\":\"2\",\"quantity\":\"3\" },{\"name\":\"brown onion\",\"photo\":\"https://img.hellofresh.com/f_auto,fl_lossy,h_70,q_auto,w_70/hellofresh_s3/image/55542777f8b25e5c0c8b456a.png\",\"serving_amount\":\"2\",\"quantity\":\"1\"},{\"name\":\"stalkcelery\",\"photo\":\"https://img.hellofresh.com/f_auto,fl_lossy,h_70,q_auto,w_70/hellofresh_s3/image/5553faaafd2cb9da068b4567.png\",\"serving_amount\":\"2\",\"quantity\":\"1\"},{\"name\":\"carrot\",\"photo\":\"https://img.hellofresh.com/f_auto,fl_lossy,h_70,q_auto,w_70/hellofresh_s3/image/55542969f8b25e390d8b456a.png\",\"serving_amount\":\"2\",\"quantity\":\"1\"}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/recipe_create/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"recipe_create",
+								""
+							],
+							"query": [
+								{
+									"key": "tags",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recipe_viewList",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTU3ODE3fQ.yfuaZEpSHMY-87rVBqfUd5MiDuuCbPuWTBpQVgiUqss",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/recipe/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"recipe",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recipe_Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTI1MDk0fQ.zNjdIolJAjJyzok_QVysBvgTqak8-T5y-oJl8jJRLHQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/recipe/10/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"recipe",
+								"10",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recipe_find",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTI1MDk0fQ.zNjdIolJAjJyzok_QVysBvgTqak8-T5y-oJl8jJRLHQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/recipe/7",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"recipe",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recipe_Review",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTI1MDk0fQ.zNjdIolJAjJyzok_QVysBvgTqak8-T5y-oJl8jJRLHQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "rate",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "Its pretty good",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/recipereview/7/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"recipereview",
+								"7",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "apikey",
+				"apikey": [
+					{
+						"key": "value",
+						"value": "Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NzI4NTc5fQ.IHeUgOiRS41MKQac_ZwbVl_rNlhaFJ_z9aPmfe7kk5o",
+						"type": "string"
+					},
+					{
+						"key": "key",
+						"value": "Authorization",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Weekly_Menu",
+			"item": [
+				{
+					"name": "weekly-menu  Create",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTU3ODE3fQ.yfuaZEpSHMY-87rVBqfUd5MiDuuCbPuWTBpQVgiUqss",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "number_ofpeople",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "weelkly_recipe_amount",
+									"value": "3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/weeklymenu/1/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"weeklymenu",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "weekly-menu  Delete week",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTU3ODE3fQ.yfuaZEpSHMY-87rVBqfUd5MiDuuCbPuWTBpQVgiUqss",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "number_ofpeople",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "weelkly_recipe_amount",
+									"value": "3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/weeklymenu/1/?week=24",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"weeklymenu",
+								"1",
+								""
+							],
+							"query": [
+								{
+									"key": "week",
+									"value": "24"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "weekly-menu List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTU3ODE3fQ.yfuaZEpSHMY-87rVBqfUd5MiDuuCbPuWTBpQVgiUqss",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/weeklymenu/1/user/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"weeklymenu",
+								"1",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "weekly-menu  User one-week menu",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTU3ODE3fQ.yfuaZEpSHMY-87rVBqfUd5MiDuuCbPuWTBpQVgiUqss",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "week_number",
+									"value": "24",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/weeklymenu/1/week/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"weeklymenu",
+								"1",
+								"week",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Weekly_menu Update-All weeks-menus",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTYwMjAzfQ.QKJjSmWBk2TBW0PMn1y_K4W_vemZr3AgLo0HR5G-SSg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "number_ofpeople",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "weelkly_recipe_amount",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/weeklymenu/1/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"weeklymenu",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Weekly_menu Update-One-specific",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NTYwMjAzfQ.QKJjSmWBk2TBW0PMn1y_K4W_vemZr3AgLo0HR5G-SSg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "number_ofpeople",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "weelkly_recipe_amount",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "change_recipe",
+									"value": "5,3",
+									"type": "text"
+								},
+								{
+									"key": "week_number",
+									"value": "49",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/menu/weeklymenu/1/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"menu",
+								"weeklymenu",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "apikey",
+				"apikey": [
+					{
+						"key": "value",
+						"value": "Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjM1NzI4NTc5fQ.IHeUgOiRS41MKQac_ZwbVl_rNlhaFJ_z9aPmfe7kk5o",
+						"type": "string"
+					},
+					{
+						"key": "key",
+						"value": "Authorization",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "signup User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "teste-one",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "test-one@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "this-test-password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/signup/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"signup",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "test-one@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "this-test-password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/login/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
